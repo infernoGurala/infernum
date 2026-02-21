@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inferno</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0f;
+      --surface: #141418;
+      --surface2: #1a1a21;
+      --border: rgba(255,255,255,0.07);
+      --accent: #c8f060;
+      --accent2: #60c8f0;
+      --text: #e8e8ec;
+      --muted: #666676;
+      --pill-bg: rgba(200,240,96,0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Noise texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* Glow blobs */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .blob-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(200,240,96,0.06) 0%, transparent 70%);
+      top: -100px; right: -100px;
+    }
+    .blob-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(96,200,240,0.05) 0%, transparent 70%);
+      bottom: 200px; left: -100px;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(13,13,15,0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      background: var(--accent);
+      color: #0d0d0f;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 10px 22px;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--pill-bg);
+      border: 1px solid rgba(200,240,96,0.15);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 0.8rem;
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 32px;
+      animation: fadeUp 0.8s ease both;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      line-height: 1.0;
+      letter-spacing: -0.04em;
+      margin-bottom: 24px;
+      animation: fadeUp 0.8s 0.1s ease both;
+    }
+    .hero h1 .line2 { color: var(--accent); }
+
+    .hero p {
+      max-width: 520px;
+      color: var(--muted);
+      font-size: 1.05rem;
+      font-weight: 300;
+      line-height: 1.7;
+      margin-bottom: 48px;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0d0d0f;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 14px 28px;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.85; transform: translateY(-2px); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 14px 28px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
+
+    /* SCROLL INDICATOR */
+    .scroll-hint {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.75rem;
+      animation: fadeIn 1s 1s ease both;
+    }
+    .scroll-line {
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--muted), transparent);
+      animation: scrollLine 1.5s infinite;
+    }
+    @keyframes scrollLine {
+      0% { transform: scaleY(0); transform-origin: top; }
+      50% { transform: scaleY(1); transform-origin: top; }
+      51% { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    /* SECTIONS */
+    section {
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-tag {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 480px;
+      font-weight: 300;
+    }
+
+    /* LINKS / CARDS SECTION */
+    #links {
+      padding: 100px 48px;
+    }
+
+    .links-header {
+      max-width: 1200px;
+      margin: 0 auto 60px;
+    }
+
+    .cards-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: border-color 0.3s, transform 0.3s, background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(200,240,96,0.03) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .card:hover {
+      border-color: rgba(200,240,96,0.2);
+      transform: translateY(-4px);
+      background: var(--surface2);
+    }
+    .card:hover::before { opacity: 1; }
+
+    .card-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      background: var(--pill-bg);
+      border: 1px solid rgba(200,240,96,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    .card-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .card h3 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    .card-arrow {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent);
+      font-family: 'Syne', sans-serif;
+    }
+    .card-arrow svg {
+      transition: transform 0.2s;
+    }
+    .card:hover .card-arrow svg {
+      transform: translateX(4px);
+    }
+
+    /* FEATURED / WIDE CARD */
+    .card.featured {
+      grid-column: span 2;
+      flex-direction: row;
+      align-items: center;
+      gap: 32px;
+      background: linear-gradient(135deg, #141418 0%, #1a1a21 100%);
+    }
+    .card.featured .card-content { flex: 1; }
+    .card.featured .card-visual {
+      width: 160px; height: 160px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(200,240,96,0.1), rgba(96,200,240,0.1));
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      flex-shrink: 0;
+    }
+
+    /* ABOUT SECTION */
+    #about {
+      padding: 100px 48px;
+      border-top: 1px solid var(--border);
+    }
+
+    .about-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .stat-box {
+      background: var(--surface);
+      padding: 36px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .stat-box:nth-child(1) { border-radius: 18px 0 0 0; }
+    .stat-box:nth-child(2) { border-radius: 0 18px 0 0; }
+    .stat-box:nth-child(3) { border-radius: 0 0 0 18px; }
+    .stat-box:nth-child(4) { border-radius: 0 0 18px 0; }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 2.5rem;
+      letter-spacing: -0.04em;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    /* CONTACT / CTA */
+    #contact {
+      padding: 100px 48px;
+      border-top: 1px solid var(--border);
+    }
+
+    .cta-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-inner::before {
+      content: '';
+      position: absolute;
+      top: -100px; left: 50%;
+      transform: translateX(-50%);
+      width: 400px; height: 300px;
+      background: radial-gradient(circle, rgba(200,240,96,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-inner .section-title { margin-bottom: 16px; }
+    .cta-inner .section-sub { margin: 0 auto 40px; }
+
+    /* FOOTER */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 40px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .footer-logo span { color: var(--accent); }
+
+    .footer-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--text); }
+
+    .footer-copy {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      #links, #about, #contact { padding: 72px 24px; }
+      footer { padding: 32px 24px; flex-direction: column; gap: 20px; text-align: center; }
+      .about-inner { grid-template-columns: 1fr; gap: 48px; }
+      .card.featured { grid-column: span 1; flex-direction: column; }
+      .card.featured .card-visual { width: 100%; }
+      .cta-inner { padding: 48px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">Infernum<span></span></a>
+    <ul class="nav-links">
+      <li><a href="#links">Pages</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="#links" class="nav-cta">Explore →</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">Personal hub · Inferno Gurala</div>
+    <h1>
+      Everything<br/>
+      <span class="line2">in one place.</span>
+    </h1>
+    <p>A central space for my projects, thoughts, and creative corners. Find whatever you're looking for below.</p>
+    <div class="hero-actions">
+      <a href="#links" class="btn-primary">Browse my pages</a>
+      <a href="#about" class="btn-ghost">About me</a>
+    </div>
+    <div class="scroll-hint">
+      scroll
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- LINKS SECTION -->
+  <section id="links">
+    <div class="links-header reveal">
+      <span class="section-tag">My Pages</span>
+      <h2 class="section-title">What's inside</h2>
+      <p class="section-sub">Everything I've built, written, or collected — organized in one hub.</p>
+    </div>
+
+    <div class="cards-grid">
+
+      <!-- Featured card -->
+      <a href="#" class="card featured reveal">
+        <div class="card-content">
+          <div class="card-label">Featured</div>
+          <h3>Utopia / productivity project</h3>
+          <p>Bringing structure to the noise — a unified space for your files, your studies, and your focus.</p>
+          <div class="card-arrow">
+            Visit page
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="card-visual">🚀</div>
+      </a>
+
+      <a href="https://blog.inferalis.space" target="_blank" class="card reveal">
+        <div class="card-icon">📝</div>
+        <div class="card-label">Writing</div>
+        <h3>Blog / Notes</h3>
+        <p>Thoughts, philosophy, and notes on things I find interesting. Updated occasionally.</p>
+        <div class="card-arrow">
+          Read more
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </a>
+
+    <a href="https://internet.inferalis.space" target="_blank" class="card reveal">
+        <div class="card-icon">🎨</div>
+        <div class="card-label">Browser</div>
+        <h3>internet & tab</h3>
+        <p>A custom new tab experience, built for focus. Your browser's blank page, reimagined.</p>
+        <div class="card-arrow">
+          View work
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </a>
+
+     <a href="https://portfolio.inferalis.space" target="_blank" class="card reveal">
+        <div class="card-icon">⚙️</div>
+        <div class="card-label">Cook</div>
+        <h3>Portfolio & Projects</h3>
+        <p>Side projects, tools I've built, and things I'm currently tinkering with.</p>
+        <div class="card-arrow">
+          Explore
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </a>
+
+      <a href="#" class="card reveal">
+        <div class="card-icon">😳</div>
+        <div class="card-label">CRINGE</div>
+        <h3>My old youtube</h3>
+        <p>Where it all started. Blender animations, random experiments, and the beautiful mess of figuring things out.</p>
+        <div class="card-arrow">
+          Browse
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </a>
+
+      <a href="https://social.inferalis.space" target="_blank" class="card reveal">
+        <div class="card-icon">🌐</div>
+        <div class="card-label">Social</div>
+        <h3>Find me elsewhere</h3>
+        <p>Links to all my social profiles, communities, and other places on the internet.</p>
+        <div class="card-arrow">
+          See links
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ABOUT SECTION -->
+  <section id="about">
+    <div class="about-inner">
+      <div class="reveal">
+        <span class="section-tag">About</span>
+        <h2 class="section-title">Who's behind this?</h2>
+        <p class="section-sub" style="margin-top: 16px;">This is <strong style="color:var(--text)">Infernum</strong> — a personal space on the internet where I collect everything I care about. Projects, writing, experiments, and whatever else feels worth sharing.</p>
+        <br/>
+<p class="section-sub">I am <strong style="color:#ffffff">Inferno</strong> aka <strong style="color:#ffffff">John-Moses-Gurala</strong></p>
+<p class="section-sub">Mechanical Engineering student working at the intersection of engineering logic and cinematic thinking. 3D graphics, motion, CAD, concept art — I build visuals from the ground up and care deeply about how things move, look, and communicate. Driven by curiosity. Always building.</p>
+
+      <div class="about-stats reveal">
+        <div class="stat-box">
+          <span class="stat-num">∞</span>
+          <span class="stat-label">Things to build</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">01</span>
+          <span class="stat-label">Hub to rule them all</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">24/7</span>
+          <span class="stat-label">Always online</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">∅</span>
+          <span class="stat-label">Ads. Ever.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA SECTION -->
+  <section id="contact">
+    <div class="cta-inner reveal">
+      <span class="section-tag">Get in touch</span>
+      <h2 class="section-title">Let's connect.</h2>
+      <p class="section-sub">Have something to say, collaborate on, or just want to reach out? Drop me a message.</p>
+      <div class="hero-actions" style="justify-content:center">
+        <a href="https://social.inferalis.space" class="btn-primary">Say hello →</a>
+        <a href="#links" class="btn-ghost">Back to top</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <a href="#" class="footer-logo">Inferno<span> Gurala</span></a>
+    <ul class="footer-links">
+      <li><a href="#links">Pages</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <span class="footer-copy">© 2026 inferno</span>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
