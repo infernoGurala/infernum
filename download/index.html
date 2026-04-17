@@ -182,7 +182,7 @@
     </div>
 
     <div class="btn-wrap">
-      <a class="dl-btn" id="dl-btn" href="https://github.com/infernoGurala/utopia-app/releases/download/v2.3.0/Utopia-v2.3.0.apk" download="Utopia-v2.3.0.apk" onclick="onDl(this)">
+      <a class="dl-btn" id="dl-btn" href="#" onclick="onDl(event)">
         <span id="btn-text">Download</span>
         <span class="btn-arrow" id="btn-arrow">↓</span>
       </a>
@@ -194,19 +194,32 @@
   </div>
 
   <script>
-    function onDl(el) {
+    const APK = "https://github.com/infernoGurala/utopia-app/releases/download/v2.3.0/Utopia-v2.3.0.apk";
+    const INTENT = "intent://github.com/infernoGurala/utopia-app/releases/download/v2.3.0/Utopia-v2.3.0.apk#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=" + encodeURIComponent(APK) + ";end";
+
+    function onDl(e) {
+      e.preventDefault();
       const text = document.getElementById("btn-text");
-      const arrow = document.getElementById("btn-arrow");
       const note = document.getElementById("status-note");
-      text.textContent = "Downloading…";
-      arrow.textContent = "↓";
-      note.textContent = "check your downloads folder";
-      el.style.background = "var(--accent)";
+      const btn = document.getElementById("dl-btn");
+
+      text.textContent = "Opening…";
+      note.textContent = "launching in chrome";
+      btn.style.background = "var(--accent)";
+
+      const ua = navigator.userAgent || "";
+      const isAndroid = /android/i.test(ua);
+
+      if (isAndroid) {
+        window.location.href = INTENT;
+      } else {
+        window.open(APK, "_blank");
+      }
+
       setTimeout(() => {
         text.textContent = "Download";
-        arrow.textContent = "↓";
         note.textContent = "apk · allow installs from unknown sources";
-        el.style.background = "";
+        btn.style.background = "";
       }, 3000);
     }
   </script>
