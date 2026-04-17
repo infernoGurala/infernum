@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Download — Utopia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --fg: #f0ede6;
+      --muted: #555;
+      --line: rgba(255,255,255,0.07);
+      --accent: #c8b89a;
+      --btn-bg: #f0ede6;
+      --btn-fg: #0a0a0a;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Syne', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+
+    .head {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .site-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 300;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .site-tag:hover { color: var(--accent); }
+
+    .app-name {
+      font-size: clamp(1.6rem, 5vw, 2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-top: 2px;
+    }
+
+    .block {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .row-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .row-value {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: var(--fg);
+      letter-spacing: 0.04em;
+    }
+
+    .btn-wrap {
+      padding-top: 0.25rem;
+    }
+
+    .dl-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0.9rem 1.2rem;
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dl-btn:hover { background: var(--accent); }
+    .dl-btn:active { transform: scale(0.98); }
+
+    .dl-btn.downloading { background: #1a1a1a; color: var(--accent); border: 1px solid var(--line); }
+
+    .btn-arrow {
+      font-size: 1rem;
+      transition: transform 0.2s;
+    }
+
+    .dl-btn:hover .btn-arrow { transform: translateY(3px); }
+
+    .progress-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      width: 0%;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+
+    .note {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      font-weight: 300;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    .foot {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    @media (max-width: 400px) {
+      body { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="head">
+      <a class="site-tag" href="/">inferalis.space</a>
+      <h1 class="app-name">Utopia</h1>
+    </div>
+
+    <div class="block">
+      <div class="row">
+        <span class="row-label">Version</span>
+        <span class="row-value" id="version-label">v2.3.0</span>
+      </div>
+      <div class="row">
+        <span class="row-label">Platform</span>
+        <span class="row-value">Android</span>
+      </div>
+      <div class="row">
+        <span class="row-label">Format</span>
+        <span class="row-value">.apk</span>
+      </div>
+    </div>
+
+    <div class="btn-wrap">
+      <button class="dl-btn" id="dl-btn" onclick="startDownload()">
+        <span id="btn-text">Download</span>
+        <span class="btn-arrow" id="btn-arrow">↓</span>
+        <div class="progress-bar" id="progress-bar"></div>
+      </button>
+    </div>
+
+    <p class="note" id="status-note">apk · allow installs from unknown sources</p>
+
+    <p class="foot">© 2026 inferalis</p>
+  </div>
+
+  <script>
+    const APK_URL = "https://github.com/infernoGurala/utopia-app/releases/download/v2.3.0/Utopia-v2.3.0.apk";
+    const VERSION = "v2.3.0";
+    const FILENAME = "Utopia-v2.3.0.apk";
+
+    let downloading = false;
+
+    function startDownload() {
+      if (downloading) return;
+      downloading = true;
+
+      const btn = document.getElementById("dl-btn");
+      const btnText = document.getElementById("btn-text");
+      const btnArrow = document.getElementById("btn-arrow");
+      const bar = document.getElementById("progress-bar");
+      const note = document.getElementById("status-note");
+
+      btn.classList.add("downloading");
+      btnText.textContent = "Starting…";
+      btnArrow.textContent = "↓";
+      note.textContent = "fetching from github releases…";
+
+      fetch(APK_URL)
+        .then(res => {
+          if (!res.ok) throw new Error("fetch failed");
+          const total = parseInt(res.headers.get("content-length") || "0");
+          const reader = res.body.getReader();
+          let received = 0;
+          const chunks = [];
+
+          btnText.textContent = "Downloading";
+
+          function read() {
+            return reader.read().then(({ done, value }) => {
+              if (done) return chunks;
+              chunks.push(value);
+              received += value.length;
+              if (total > 0) {
+                const pct = Math.round((received / total) * 100);
+                bar.style.width = pct + "%";
+                btnText.textContent = "Downloading  " + pct + "%";
+              } else {
+                const mb = (received / 1048576).toFixed(1);
+                btnText.textContent = "Downloading  " + mb + " MB";
+              }
+              return read();
+            });
+          }
+
+          return read().then(chunks => {
+            const blob = new Blob(chunks, { type: "application/vnd.android.package-archive" });
+            return blob;
+          });
+        })
+        .then(blob => {
+          bar.style.width = "100%";
+          btnText.textContent = "Done";
+          btnArrow.textContent = "✓";
+          note.textContent = "saved to downloads";
+
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = FILENAME;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+
+          setTimeout(() => {
+            btn.classList.remove("downloading");
+            btnText.textContent = "Download";
+            btnArrow.textContent = "↓";
+            bar.style.width = "0%";
+            note.textContent = "apk · allow installs from unknown sources";
+            downloading = false;
+          }, 3000);
+        })
+        .catch(() => {
+          btnText.textContent = "Failed — retry";
+          btnArrow.textContent = "↺";
+          bar.style.width = "0%";
+          note.textContent = "could not reach github releases";
+          btn.classList.remove("downloading");
+          downloading = false;
+        });
+    }
+  </script>
+</body>
+</html>
