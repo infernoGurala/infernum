@@ -131,24 +131,12 @@
     .dl-btn:hover { background: var(--accent); }
     .dl-btn:active { transform: scale(0.98); }
 
-    .dl-btn.downloading { background: #1a1a1a; color: var(--accent); border: 1px solid var(--line); }
-
     .btn-arrow {
       font-size: 1rem;
       transition: transform 0.2s;
     }
 
     .dl-btn:hover .btn-arrow { transform: translateY(3px); }
-
-    .progress-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      height: 2px;
-      width: 0%;
-      background: var(--accent);
-      transition: width 0.3s ease;
-    }
 
     .note {
       font-family: 'DM Mono', monospace;
@@ -194,11 +182,10 @@
     </div>
 
     <div class="btn-wrap">
-      <button class="dl-btn" id="dl-btn" onclick="startDownload()">
+      <a class="dl-btn" id="dl-btn" href="https://github.com/infernoGurala/utopia-app/releases/download/v2.3.0/Utopia-v2.3.0.apk" download="Utopia-v2.3.0.apk" onclick="onDl(this)">
         <span id="btn-text">Download</span>
         <span class="btn-arrow" id="btn-arrow">↓</span>
-        <div class="progress-bar" id="progress-bar"></div>
-      </button>
+      </a>
     </div>
 
     <p class="note" id="status-note">apk · allow installs from unknown sources</p>
@@ -207,89 +194,20 @@
   </div>
 
   <script>
-    const APK_URL = "https://github.com/infernoGurala/utopia-app/releases/download/v2.3.0/Utopia-v2.3.0.apk";
-    const VERSION = "v2.3.0";
-    const FILENAME = "Utopia-v2.3.0.apk";
-
-    let downloading = false;
-
-    function startDownload() {
-      if (downloading) return;
-      downloading = true;
-
-      const btn = document.getElementById("dl-btn");
-      const btnText = document.getElementById("btn-text");
-      const btnArrow = document.getElementById("btn-arrow");
-      const bar = document.getElementById("progress-bar");
+    function onDl(el) {
+      const text = document.getElementById("btn-text");
+      const arrow = document.getElementById("btn-arrow");
       const note = document.getElementById("status-note");
-
-      btn.classList.add("downloading");
-      btnText.textContent = "Starting…";
-      btnArrow.textContent = "↓";
-      note.textContent = "fetching from github releases…";
-
-      fetch(APK_URL)
-        .then(res => {
-          if (!res.ok) throw new Error("fetch failed");
-          const total = parseInt(res.headers.get("content-length") || "0");
-          const reader = res.body.getReader();
-          let received = 0;
-          const chunks = [];
-
-          btnText.textContent = "Downloading";
-
-          function read() {
-            return reader.read().then(({ done, value }) => {
-              if (done) return chunks;
-              chunks.push(value);
-              received += value.length;
-              if (total > 0) {
-                const pct = Math.round((received / total) * 100);
-                bar.style.width = pct + "%";
-                btnText.textContent = "Downloading  " + pct + "%";
-              } else {
-                const mb = (received / 1048576).toFixed(1);
-                btnText.textContent = "Downloading  " + mb + " MB";
-              }
-              return read();
-            });
-          }
-
-          return read().then(chunks => {
-            const blob = new Blob(chunks, { type: "application/vnd.android.package-archive" });
-            return blob;
-          });
-        })
-        .then(blob => {
-          bar.style.width = "100%";
-          btnText.textContent = "Done";
-          btnArrow.textContent = "✓";
-          note.textContent = "saved to downloads";
-
-          const a = document.createElement("a");
-          a.href = URL.createObjectURL(blob);
-          a.download = FILENAME;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-
-          setTimeout(() => {
-            btn.classList.remove("downloading");
-            btnText.textContent = "Download";
-            btnArrow.textContent = "↓";
-            bar.style.width = "0%";
-            note.textContent = "apk · allow installs from unknown sources";
-            downloading = false;
-          }, 3000);
-        })
-        .catch(() => {
-          btnText.textContent = "Failed — retry";
-          btnArrow.textContent = "↺";
-          bar.style.width = "0%";
-          note.textContent = "could not reach github releases";
-          btn.classList.remove("downloading");
-          downloading = false;
-        });
+      text.textContent = "Downloading…";
+      arrow.textContent = "↓";
+      note.textContent = "check your downloads folder";
+      el.style.background = "var(--accent)";
+      setTimeout(() => {
+        text.textContent = "Download";
+        arrow.textContent = "↓";
+        note.textContent = "apk · allow installs from unknown sources";
+        el.style.background = "";
+      }, 3000);
     }
   </script>
 </body>
