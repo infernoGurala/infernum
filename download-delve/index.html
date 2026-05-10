@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Download — Utopia</title>
+  <title>Download — Delve</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
@@ -18,6 +18,7 @@
       --accent: #c8b89a;
       --btn-bg: #f0ede6;
       --btn-fg: #0a0a0a;
+      --error: #c87a7a;
     }
 
     html, body {
@@ -45,10 +46,14 @@
       gap: 3rem;
     }
 
+    /* HEAD */
     .head {
       display: flex;
       flex-direction: column;
       gap: 4px;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeUp 0.5s ease forwards 0.1s;
     }
 
     .site-tag {
@@ -61,7 +66,6 @@
       text-decoration: none;
       transition: color 0.2s;
     }
-
     .site-tag:hover { color: var(--accent); }
 
     .app-name {
@@ -72,11 +76,15 @@
       margin-top: 2px;
     }
 
+    /* BLOCK */
     .block {
       display: flex;
       flex-direction: column;
       gap: 0;
       border-top: 1px solid var(--line);
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeUp 0.5s ease forwards 0.2s;
     }
 
     .row {
@@ -102,10 +110,37 @@
       font-weight: 400;
       color: var(--fg);
       letter-spacing: 0.04em;
+      transition: opacity 0.3s;
     }
 
+    .row-value.loading {
+      opacity: 0.3;
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    /* DEVICE ROW */
+    .device-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .device-abi {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+    }
+
+    /* BUTTON */
     .btn-wrap {
       padding-top: 0.25rem;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeUp 0.5s ease forwards 0.3s;
     }
 
     .dl-btn {
@@ -122,21 +157,31 @@
       letter-spacing: 0.02em;
       border: none;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
+      transition: background 0.2s, transform 0.1s, opacity 0.2s;
       text-decoration: none;
-      position: relative;
       overflow: hidden;
     }
 
     .dl-btn:hover { background: var(--accent); }
     .dl-btn:active { transform: scale(0.98); }
+    .dl-btn.disabled {
+      opacity: 0.35;
+      pointer-events: none;
+      cursor: default;
+    }
 
     .btn-arrow {
       font-size: 1rem;
       transition: transform 0.2s;
     }
-
     .dl-btn:hover .btn-arrow { transform: translateY(3px); }
+
+    /* NOTE */
+    .note-wrap {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeUp 0.5s ease forwards 0.4s;
+    }
 
     .note {
       font-family: 'DM Mono', monospace;
@@ -144,13 +189,52 @@
       font-weight: 300;
       color: var(--muted);
       letter-spacing: 0.08em;
+      line-height: 1.6;
     }
 
+    .note a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .note a:hover { text-decoration: underline; }
+
+    .note.error { color: var(--error); }
+
+    /* FOOTER */
     .foot {
       font-family: 'DM Mono', monospace;
       font-size: 0.6rem;
       color: var(--muted);
       letter-spacing: 0.1em;
+      opacity: 0;
+      animation: fadeUp 0.5s ease forwards 0.5s;
+    }
+
+    /* SPINNER */
+    .spinner {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border: 1px solid var(--muted);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     @media (max-width: 400px) {
@@ -169,59 +253,204 @@
     <div class="block">
       <div class="row">
         <span class="row-label">Version</span>
-        <span class="row-value" id="version-label">v1.0(Beta)</span>
+        <span class="row-value loading" id="version-val">—</span>
+      </div>
+      <div class="row">
+        <span class="row-label">Released</span>
+        <span class="row-value loading" id="date-val">—</span>
       </div>
       <div class="row">
         <span class="row-label">Platform</span>
-        <span class="row-value">Android Preview</span>
+        <span class="row-value">Android</span>
       </div>
       <div class="row">
         <span class="row-label">Format</span>
         <span class="row-value">.apk</span>
       </div>
+      <div class="device-row">
+        <span class="row-label">Your device</span>
+        <span class="device-abi" id="abi-val">detecting…</span>
+      </div>
     </div>
 
     <div class="btn-wrap">
-      <a class="dl-btn" id="dl-btn" href="#" onclick="onDl(event)">
-        <span id="btn-text">Download</span>
+      <a class="dl-btn disabled" id="dl-btn" href="#" onclick="onDl(event)">
+        <span id="btn-text"><span class="spinner"></span>Loading</span>
         <span class="btn-arrow" id="btn-arrow">↓</span>
       </a>
     </div>
 
-    <p class="note" id="status-note">Testing · Beta preview</p>
+    <div class="note-wrap">
+      <p class="note" id="status-note">Fetching latest release…</p>
+    </div>
 
     <p class="foot">© 2026 inferalis</p>
   </div>
 
   <script>
-    const APK = "https://github.com/infernoGurala/Delve-app/releases/download/v1.0(Beta)/DELVE-Beta.1.0.apk";
-    const INTENT = "intent://github.com/infernoGurala/Delve-app/releases/download/v1.0(Beta)/DELVE-Beta.1.0.apk#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=" + encodeURIComponent(APK) + ";end";
+    const REPO = "infernoGurala/delve-app";
+    const API  = `https://api.github.com/repos/${REPO}/releases/latest`;
 
+    // State
+    let apkUrl      = null;
+    let releaseUrl  = null;
+    let detectedAbi = "arm64-v8a"; // safe default
+
+    // ── ABI detection ──────────────────────────────────────────────
+    async function detectAbi() {
+      const abiEl = document.getElementById("abi-val");
+
+      try {
+        if (navigator.userAgentData) {
+          const d = await navigator.userAgentData.getHighEntropyValues(["architecture", "bitness"]);
+          const arch = (d.architecture || "").toLowerCase();
+          const bits = d.bitness;
+
+          if (arch.includes("x86") || arch.includes("x64")) {
+            detectedAbi = "x86_64";
+          } else if (bits === "32") {
+            detectedAbi = "armeabi-v7a";
+          } else {
+            detectedAbi = "arm64-v8a";
+          }
+        } else {
+          // UA fallback — modern Android → arm64
+          const ua = navigator.userAgent || "";
+          if (/android/i.test(ua)) {
+            detectedAbi = "arm64-v8a";
+          } else {
+            detectedAbi = "x86_64"; // desktop / emulator
+          }
+        }
+      } catch {
+        detectedAbi = "arm64-v8a";
+      }
+
+      abiEl.textContent = detectedAbi;
+    }
+
+    // ── GitHub release fetch ───────────────────────────────────────
+    async function fetchRelease() {
+      const versionEl = document.getElementById("version-val");
+      const dateEl    = document.getElementById("date-val");
+      const noteEl    = document.getElementById("status-note");
+      const btnEl     = document.getElementById("dl-btn");
+      const btnText   = document.getElementById("btn-text");
+
+      try {
+        const res = await fetch(API, {
+          headers: { "Accept": "application/vnd.github+json" }
+        });
+
+        if (!res.ok) throw new Error(`GitHub API: ${res.status}`);
+
+        const data = await res.json();
+
+        // Version tag
+        const tag = data.tag_name || "unknown";
+        versionEl.textContent = tag;
+        versionEl.classList.remove("loading");
+
+        // Release date
+        const rawDate = data.published_at || data.created_at;
+        if (rawDate) {
+          const d = new Date(rawDate);
+          dateEl.textContent = d.toLocaleDateString("en-GB", {
+            day: "2-digit", month: "short", year: "numeric"
+          });
+        } else {
+          dateEl.textContent = "—";
+        }
+        dateEl.classList.remove("loading");
+
+        // Release page URL
+        releaseUrl = data.html_url || `https://github.com/${REPO}/releases/latest`;
+
+        // Find APK assets by exact filename
+        const assets = data.assets || [];
+        const findByName = (filename) =>
+          assets.find(a => a.name === filename)?.browser_download_url || null;
+
+        const urls = {
+          "armeabi-v7a": findByName("app-armeabi-v7a-release.apk"),
+          "arm64-v8a":   findByName("app-arm64-v8a-release.apk"),
+          "x86_64":      findByName("app-x86_64-release.apk"),
+          "universal":   findByName("app-release.apk"),
+        };
+
+        // Pick best match for detected ABI, fallback chain
+        apkUrl =
+          urls[detectedAbi] ||
+          urls["arm64-v8a"] ||
+          urls["universal"] ||
+          Object.values(urls).find(Boolean) ||
+          null;
+
+        if (apkUrl) {
+          btnEl.classList.remove("disabled");
+          btnText.textContent = "Download";
+          noteEl.classList.remove("error");
+          noteEl.innerHTML = `
+            Latest · <a href="${releaseUrl}" target="_blank" rel="noopener">View release notes ↗</a>
+          `;
+        } else {
+          throw new Error("No APK assets found in latest release.");
+        }
+
+      } catch (err) {
+        versionEl.textContent = "error";
+        versionEl.classList.remove("loading");
+        dateEl.textContent = "—";
+        dateEl.classList.remove("loading");
+
+        btnText.textContent = "Unavailable";
+        noteEl.textContent = `Could not fetch release. Check GitHub or try again later.`;
+        noteEl.classList.add("error");
+
+        console.error("Release fetch failed:", err);
+      }
+    }
+
+    // ── Download handler ───────────────────────────────────────────
     function onDl(e) {
       e.preventDefault();
-      const text = document.getElementById("btn-text");
-      const note = document.getElementById("status-note");
-      const btn = document.getElementById("dl-btn");
+      if (!apkUrl) return;
 
-      text.textContent = "Opening…";
-      note.textContent = "launching in chrome";
-      btn.style.background = "var(--accent)";
+      const btnEl   = document.getElementById("dl-btn");
+      const btnText = document.getElementById("btn-text");
+      const noteEl  = document.getElementById("status-note");
+
+      btnText.textContent = "Opening…";
+      btnEl.style.background = "var(--accent)";
 
       const ua = navigator.userAgent || "";
       const isAndroid = /android/i.test(ua);
 
       if (isAndroid) {
-        window.location.href = INTENT;
+        // intent:// forces Chrome to open, bypasses in-app browser (e.g. WhatsApp)
+        const intent = "intent://" +
+          apkUrl.replace(/^https?:\/\//, "") +
+          "#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=" +
+          encodeURIComponent(apkUrl) + ";end";
+        window.location.href = intent;
       } else {
-        window.open(APK, "_blank");
+        window.open(apkUrl, "_blank");
       }
 
       setTimeout(() => {
-        text.textContent = "Download";
-        note.textContent = "Testing · Beta preview";
-        btn.style.background = "";
+        btnText.textContent = "Download";
+        btnEl.style.background = "";
+        if (releaseUrl) {
+          noteEl.innerHTML = `Latest · <a href="${releaseUrl}" target="_blank" rel="noopener">View release notes ↗</a>`;
+        }
       }, 3000);
     }
+
+    // ── Init ───────────────────────────────────────────────────────
+    (async () => {
+      await detectAbi();
+      await fetchRelease();
+    })();
   </script>
 </body>
 </html>
