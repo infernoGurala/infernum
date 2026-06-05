@@ -41,9 +41,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       min-height: 100vh;
-      padding: 3rem 1.5rem;
+      padding: 5rem 1.5rem 3rem 1.5rem;
       position: relative;
     }
 
@@ -78,6 +78,7 @@
       filter: blur(140px);
       opacity: 0.35;
       mix-blend-mode: screen;
+      will-change: transform;
     }
 
     .orb-1 {
@@ -86,7 +87,6 @@
       width: 500px;
       height: 500px;
       background: radial-gradient(circle, var(--accent-purple) 0%, transparent 70%);
-      animation: floatOrb1 22s infinite ease-in-out alternate;
     }
 
     .orb-2 {
@@ -95,19 +95,6 @@
       width: 550px;
       height: 550px;
       background: radial-gradient(circle, var(--accent-cyan) 0%, transparent 70%);
-      animation: floatOrb2 25s infinite ease-in-out alternate;
-    }
-
-    @keyframes floatOrb1 {
-      0% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(80px, 60px) scale(1.1); }
-      100% { transform: translate(-30px, 120px) scale(0.95); }
-    }
-
-    @keyframes floatOrb2 {
-      0% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(-80px, -90px) scale(0.95); }
-      100% { transform: translate(60px, 40px) scale(1.1); }
     }
 
     .wrap {
@@ -118,6 +105,7 @@
       gap: 2rem;
       position: relative;
       z-index: 1;
+      margin: auto 0;
     }
 
     /* HEAD */
@@ -125,6 +113,7 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
+      padding: 0 1.4rem;
       opacity: 0;
       transform: translateY(10px);
       animation: fadeUp 0.5s ease forwards 0.1s;
@@ -221,20 +210,24 @@
       letter-spacing: 0.02em;
     }
 
-    /* BUTTON */
+    /* BUTTON WRAP & MORPH TRIGGERS */
     .btn-wrap {
       padding-top: 0.25rem;
       opacity: 0;
       transform: translateY(10px);
       animation: fadeUp 0.5s ease forwards 0.3s;
+      display: flex;
+      justify-content: center;
     }
 
     .dl-btn {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: space-between;
       width: 100%;
-      padding: 1.1rem 1.5rem;
+      height: 48px;
+      padding: 0 1.5rem;
       background: var(--btn-bg);
       border: 1px solid var(--btn-bg);
       color: var(--btn-fg);
@@ -245,9 +238,10 @@
       text-transform: uppercase;
       border-radius: 12px;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
       text-decoration: none;
       box-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
+      overflow: hidden;
     }
 
     .dl-btn:hover {
@@ -270,6 +264,43 @@
       box-shadow: none;
     }
 
+    .btn-text-wrap, .btn-arrow {
+      transition: opacity 0.3s ease;
+      opacity: 1;
+    }
+
+    /* Morphing state 1: loading circle */
+    .dl-btn.loading-state {
+      width: 48px;
+      padding: 0;
+      border-radius: 50%;
+      background: transparent;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .dl-btn.loading-state .btn-text-wrap,
+    .dl-btn.loading-state .btn-arrow {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    /* Morphing state 2: success confirmation */
+    .dl-btn.success-state {
+      width: 48px;
+      padding: 0;
+      border-radius: 50%;
+      background: #10b981;
+      border-color: #10b981;
+      color: #ffffff;
+      box-shadow: 0 0 15px #10b981;
+    }
+
+    .dl-btn.success-state .btn-text-wrap,
+    .dl-btn.success-state .btn-arrow {
+      opacity: 0;
+      pointer-events: none;
+    }
+
     .btn-arrow {
       font-size: 1.1rem;
       line-height: 1;
@@ -277,6 +308,48 @@
     }
     .dl-btn:hover .btn-arrow {
       transform: translateY(2px);
+    }
+
+    /* SPINNERS */
+    .spinner {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 1.5px solid var(--dim);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+    }
+
+    .inline-spinner {
+      margin-right: 8px;
+    }
+
+    .center-spinner {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 14px;
+      height: 14px;
+    }
+
+    .success-checkmark {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.25rem;
+      font-weight: bold;
+      animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes popIn {
+      from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+      to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
     }
 
     /* NOTE */
@@ -297,7 +370,7 @@
     }
 
     .note a {
-      color: #60a5fa; /* light blue for link */
+      color: #60a5fa;
       text-decoration: underline;
       text-underline-offset: 3px;
       transition: color 0.2s;
@@ -350,7 +423,8 @@
     }
 
     @media (max-width: 400px) {
-      body { padding: 2.5rem 1rem; }
+      body { padding: 4rem 1rem 2.5rem 1rem; }
+      .wrap { margin: 1.5rem 0; }
     }
   </style>
 </head>
@@ -396,8 +470,12 @@
     <!-- Button -->
     <div class="btn-wrap">
       <a class="dl-btn disabled" id="dl-btn" href="#" onclick="onDl(event)">
-        <span id="btn-text"><span class="spinner"></span>Loading</span>
+        <span id="btn-text">
+          <span class="spinner" id="btn-spinner"></span>
+          <span id="btn-text-content">Loading</span>
+        </span>
         <span class="btn-arrow" id="btn-arrow">↓</span>
+        <span class="success-checkmark" id="btn-checkmark">✓</span>
       </a>
     </div>
 
@@ -458,7 +536,8 @@
       const dateEl    = document.getElementById("date-val");
       const noteEl    = document.getElementById("status-note");
       const btnEl     = document.getElementById("dl-btn");
-      const btnText   = document.getElementById("btn-text");
+      const btnSpinner = document.getElementById("btn-spinner");
+      const btnTextContent = document.getElementById("btn-text-content");
 
       try {
         const res = await fetch(API, {
@@ -512,7 +591,8 @@
 
         if (apkUrl) {
           btnEl.classList.remove("disabled");
-          btnText.textContent = "Download";
+          btnSpinner.style.display = "none";
+          btnTextContent.textContent = "Download";
           noteEl.classList.remove("error");
           noteEl.innerHTML = `
             Latest · <a href="${releaseUrl}" target="_blank" rel="noopener">View release notes ↗</a>
@@ -527,7 +607,8 @@
         dateEl.textContent = "—";
         dateEl.classList.remove("loading");
 
-        btnText.textContent = "Unavailable";
+        btnSpinner.style.display = "none";
+        btnTextContent.textContent = "Unavailable";
         noteEl.textContent = `Could not fetch release. Check GitHub or try again later.`;
         noteEl.classList.add("error");
 
@@ -541,38 +622,80 @@
       if (!apkUrl) return;
 
       const btnEl   = document.getElementById("dl-btn");
-      const btnText = document.getElementById("btn-text");
+      const btnSpinner = document.getElementById("btn-spinner");
+      const btnTextContent = document.getElementById("btn-text-content");
       const noteEl  = document.getElementById("status-note");
 
-      btnText.textContent = "Opening…";
-      btnEl.style.background = "rgba(255,255,255,0.08)";
-      btnEl.style.color = "#ffffff";
-      btnEl.style.borderColor = "rgba(255,255,255,0.2)";
+      // Morph into circular spinner state
+      btnSpinner.style.display = "inline-block";
+      btnEl.classList.add("loading-state");
 
       const ua = navigator.userAgent || "";
       const isAndroid = /android/i.test(ua);
 
-      if (isAndroid) {
-        // intent:// forces Chrome to open, bypasses in-app browser (e.g. WhatsApp)
-        const intent = "intent://" +
-          apkUrl.replace(/^https?:\/\//, "") +
-          "#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=" +
-          encodeURIComponent(apkUrl) + ";end";
-        window.location.href = intent;
-      } else {
-        window.open(apkUrl, "_blank");
-      }
-
       setTimeout(() => {
-        btnText.textContent = "Download";
-        btnEl.style.background = "";
-        btnEl.style.color = "";
-        btnEl.style.borderColor = "";
-        if (releaseUrl) {
-          noteEl.innerHTML = `Latest · <a href="${releaseUrl}" target="_blank" rel="noopener">View release notes ↗</a>`;
+        if (isAndroid) {
+          const intent = "intent://" +
+            apkUrl.replace(/^https?:\/\//, "") +
+            "#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=" +
+            encodeURIComponent(apkUrl) + ";end";
+          window.location.href = intent;
+        } else {
+          window.open(apkUrl, "_blank");
         }
-      }, 3000);
+
+        // Morph into success state
+        btnEl.classList.remove("loading-state");
+        btnEl.classList.add("success-state");
+
+        setTimeout(() => {
+          // Reset morph button states
+          btnEl.classList.remove("success-state");
+          btnSpinner.style.display = "none";
+          btnTextContent.textContent = "Download";
+          if (releaseUrl) {
+            noteEl.innerHTML = `Latest · <a href="${releaseUrl}" target="_blank" rel="noopener">View release notes ↗</a>`;
+          }
+        }, 2500);
+      }, 1200);
     }
+
+    // ── INTERACTIVE ORB GRAVITY DRIFT ────────────────────────────────
+    const orb1 = document.querySelector('.orb-1');
+    const orb2 = document.querySelector('.orb-2');
+    
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    
+    let orb1X = 0;
+    let orb1Y = 0;
+    let orb2X = 0;
+    let orb2Y = 0;
+    
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+    
+    function updateOrbs() {
+      const target1X = (mouseX - window.innerWidth / 2) * 0.08;
+      const target1Y = (mouseY - window.innerHeight / 2) * 0.08;
+      
+      const target2X = (mouseX - window.innerWidth / 2) * -0.06;
+      const target2Y = (mouseY - window.innerHeight / 2) * -0.06;
+      
+      orb1X += (target1X - orb1X) * 0.04;
+      orb1Y += (target1Y - orb1Y) * 0.04;
+      
+      orb2X += (target2X - orb2X) * 0.04;
+      orb2Y += (target2Y - orb2Y) * 0.04;
+      
+      orb1.style.transform = `translate(${orb1X}px, ${orb1Y}px)`;
+      orb2.style.transform = `translate(${orb2X}px, ${orb2Y}px)`;
+      
+      requestAnimationFrame(updateOrbs);
+    }
+    updateOrbs();
 
     // ── Init ───────────────────────────────────────────────────────
     (async () => {
