@@ -6,27 +6,35 @@
   <title>Download — Utopia</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0a0a0a;
-      --fg: #f0ede6;
-      --muted: #555;
-      --line: rgba(255,255,255,0.07);
-      --accent: #c8b89a;
-      --btn-bg: #f0ede6;
-      --btn-fg: #0a0a0a;
-      --error: #c87a7a;
+      /* ── Infernum Obsidian Dark Palette ── */
+      --bg: #030303;
+      --surface: rgba(255, 255, 255, 0.03);
+      --card: rgba(255, 255, 255, 0.015);
+      --border: rgba(255, 255, 255, 0.06);
+      --text: #ffffff;
+      --sub: rgba(255, 255, 255, 0.6);
+      --dim: rgba(255, 255, 255, 0.35);
+      --primary: #ffffff;
+      --accent-purple: #8b5cf6;
+      --accent-cyan: #06b6d4;
+      --line: rgba(255, 255, 255, 0.08);
+      --btn-bg: #ffffff;
+      --btn-fg: #000000;
+      --error: #ef4444;
     }
 
     html, body {
       height: 100%;
       background: var(--bg);
-      color: var(--fg);
-      font-family: 'Syne', sans-serif;
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
     body {
@@ -35,15 +43,81 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      padding: 2rem;
+      padding: 3rem 1.5rem;
+      position: relative;
+    }
+
+    /* Grain Overlay */
+    .grain-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      opacity: 0.02;
+      pointer-events: none;
+      z-index: 9999;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* Ambient Gradients */
+    .ambient-glow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(140px);
+      opacity: 0.35;
+      mix-blend-mode: screen;
+    }
+
+    .orb-1 {
+      top: -15%;
+      left: 15%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, var(--accent-purple) 0%, transparent 70%);
+      animation: floatOrb1 22s infinite ease-in-out alternate;
+    }
+
+    .orb-2 {
+      bottom: -15%;
+      right: 15%;
+      width: 550px;
+      height: 550px;
+      background: radial-gradient(circle, var(--accent-cyan) 0%, transparent 70%);
+      animation: floatOrb2 25s infinite ease-in-out alternate;
+    }
+
+    @keyframes floatOrb1 {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(80px, 60px) scale(1.1); }
+      100% { transform: translate(-30px, 120px) scale(0.95); }
+    }
+
+    @keyframes floatOrb2 {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-80px, -90px) scale(0.95); }
+      100% { transform: translate(60px, 40px) scale(1.1); }
     }
 
     .wrap {
       width: 100%;
-      max-width: 360px;
+      max-width: 380px;
       display: flex;
       flex-direction: column;
-      gap: 3rem;
+      gap: 2rem;
+      position: relative;
+      z-index: 1;
     }
 
     /* HEAD */
@@ -57,34 +131,43 @@
     }
 
     .site-tag {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.65rem;
-      font-weight: 300;
-      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 400;
+      color: var(--dim);
       letter-spacing: 0.12em;
       text-transform: uppercase;
       text-decoration: none;
-      transition: color 0.2s;
+      transition: color 0.3s ease;
+      display: inline-block;
     }
-    .site-tag:hover { color: var(--accent); }
+    .site-tag:hover { color: #ffffff; }
 
     .app-name {
-      font-size: clamp(1.6rem, 5vw, 2rem);
-      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
       letter-spacing: -0.02em;
-      line-height: 1;
-      margin-top: 2px;
+      line-height: 1.1;
+      margin-top: 4px;
+      background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.85) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    /* BLOCK */
+    /* BLOCK (Glassmorphic Table) */
     .block {
       display: flex;
       flex-direction: column;
-      gap: 0;
-      border-top: 1px solid var(--line);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0.5rem 1.4rem;
       opacity: 0;
       transform: translateY(10px);
       animation: fadeUp 0.5s ease forwards 0.2s;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
 
     .row {
@@ -94,22 +177,25 @@
       padding: 1rem 0;
       border-bottom: 1px solid var(--line);
     }
+    .row:last-child {
+      border-bottom: none;
+    }
 
     .row-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.65rem;
-      font-weight: 300;
-      letter-spacing: 0.15em;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--muted);
+      color: var(--sub);
     }
 
     .row-value {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
       font-weight: 400;
-      color: var(--fg);
-      letter-spacing: 0.04em;
+      color: var(--text);
+      letter-spacing: 0.01em;
       transition: opacity 0.3s;
     }
 
@@ -124,15 +210,15 @@
       align-items: center;
       justify-content: space-between;
       padding: 1rem 0;
-      border-bottom: 1px solid var(--line);
+      border-bottom: none;
     }
 
     .device-abi {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.8rem;
-      font-weight: 400;
-      color: var(--accent);
-      letter-spacing: 0.04em;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #34d399; /* emerald accent */
+      letter-spacing: 0.02em;
     }
 
     /* BUTTON */
@@ -148,64 +234,90 @@
       align-items: center;
       justify-content: space-between;
       width: 100%;
-      padding: 0.9rem 1.2rem;
+      padding: 1.1rem 1.5rem;
       background: var(--btn-bg);
+      border: 1px solid var(--btn-bg);
       color: var(--btn-fg);
-      font-family: 'Syne', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: 12px;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s, opacity 0.2s;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       text-decoration: none;
-      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
     }
 
-    .dl-btn:hover { background: var(--accent); }
-    .dl-btn:active { transform: scale(0.98); }
+    .dl-btn:hover {
+      background: transparent;
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(255, 255, 255, 0.08);
+    }
+    .dl-btn:active {
+      transform: translateY(0);
+    }
     .dl-btn.disabled {
-      opacity: 0.35;
+      opacity: 0.25;
       pointer-events: none;
       cursor: default;
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+      color: var(--dim);
+      box-shadow: none;
     }
 
     .btn-arrow {
-      font-size: 1rem;
-      transition: transform 0.2s;
+      font-size: 1.1rem;
+      line-height: 1;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .dl-btn:hover .btn-arrow { transform: translateY(3px); }
+    .dl-btn:hover .btn-arrow {
+      transform: translateY(2px);
+    }
 
     /* NOTE */
     .note-wrap {
       opacity: 0;
       transform: translateY(10px);
       animation: fadeUp 0.5s ease forwards 0.4s;
+      padding-left: 0.25rem;
     }
 
     .note {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.6rem;
-      font-weight: 300;
-      color: var(--muted);
-      letter-spacing: 0.08em;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: var(--sub);
+      letter-spacing: 0.02em;
       line-height: 1.6;
     }
 
     .note a {
-      color: var(--accent);
-      text-decoration: none;
+      color: #60a5fa; /* light blue for link */
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      transition: color 0.2s;
     }
-    .note a:hover { text-decoration: underline; }
+    .note a:hover {
+      color: #ffffff;
+    }
 
     .note.error { color: var(--error); }
 
     /* FOOTER */
     .foot {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.6rem;
-      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--dim);
       letter-spacing: 0.1em;
+      text-align: center;
+      border-top: 1px solid var(--line);
+      padding-top: 1.5rem;
+      margin-top: 1rem;
       opacity: 0;
       animation: fadeUp 0.5s ease forwards 0.5s;
     }
@@ -213,13 +325,13 @@
     /* SPINNER */
     .spinner {
       display: inline-block;
-      width: 8px;
-      height: 8px;
-      border: 1px solid var(--muted);
-      border-top-color: var(--accent);
+      width: 12px;
+      height: 12px;
+      border: 1.5px solid var(--dim);
+      border-top-color: #ffffff;
       border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      margin-right: 6px;
+      animation: spin 0.6s linear infinite;
+      margin-right: 8px;
       vertical-align: middle;
     }
 
@@ -238,18 +350,26 @@
     }
 
     @media (max-width: 400px) {
-      body { padding: 1.5rem; }
+      body { padding: 2.5rem 1rem; }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="grain-overlay"></div>
+  
+  <div class="ambient-glow">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
 
+  <div class="wrap">
+    <!-- Head -->
     <div class="head">
-      <a class="site-tag" href="/">inferalis.space</a>
+      <a class="site-tag" href="/">INFERNUM</a>
       <h1 class="app-name">Utopia</h1>
     </div>
 
+    <!-- Data Table -->
     <div class="block">
       <div class="row">
         <span class="row-label">Version</span>
@@ -273,6 +393,7 @@
       </div>
     </div>
 
+    <!-- Button -->
     <div class="btn-wrap">
       <a class="dl-btn disabled" id="dl-btn" href="#" onclick="onDl(event)">
         <span id="btn-text"><span class="spinner"></span>Loading</span>
@@ -280,11 +401,13 @@
       </a>
     </div>
 
+    <!-- Note -->
     <div class="note-wrap">
       <p class="note" id="status-note">Fetching latest release…</p>
     </div>
 
-    <p class="foot">© 2026 inferalis</p>
+    <!-- Footer -->
+    <p class="foot">© 2026 INFERNUM • EDITORIAL SOLITUDE</p>
   </div>
 
   <script>
@@ -422,7 +545,9 @@
       const noteEl  = document.getElementById("status-note");
 
       btnText.textContent = "Opening…";
-      btnEl.style.background = "var(--accent)";
+      btnEl.style.background = "rgba(255,255,255,0.08)";
+      btnEl.style.color = "#ffffff";
+      btnEl.style.borderColor = "rgba(255,255,255,0.2)";
 
       const ua = navigator.userAgent || "";
       const isAndroid = /android/i.test(ua);
@@ -441,6 +566,8 @@
       setTimeout(() => {
         btnText.textContent = "Download";
         btnEl.style.background = "";
+        btnEl.style.color = "";
+        btnEl.style.borderColor = "";
         if (releaseUrl) {
           noteEl.innerHTML = `Latest · <a href="${releaseUrl}" target="_blank" rel="noopener">View release notes ↗</a>`;
         }
