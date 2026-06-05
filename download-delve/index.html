@@ -264,19 +264,42 @@
       box-shadow: none;
     }
 
+    .btn-text-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      opacity: 1;
+    }
+
+    .btn-arrow {
+      font-size: 1.1rem;
+      line-height: 1;
+      transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 1;
+    }
+    .dl-btn:hover .btn-arrow {
+      transform: translateY(2px);
+    }
+
     /* Morphing state 1: loading circle */
     .dl-btn.loading-state {
       width: 48px;
       padding: 0;
       border-radius: 50%;
-      justify-content: center;
       background: transparent;
       border-color: rgba(255, 255, 255, 0.2);
     }
     
-    .dl-btn.loading-state .btn-arrow,
-    .dl-btn.loading-state #btn-text-content {
-      display: none;
+    .dl-btn.loading-state .btn-text-wrap {
+      opacity: 0;
+      transform: translateX(-8px);
+      pointer-events: none;
+    }
+    .dl-btn.loading-state .btn-arrow {
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
     }
     
     /* Morphing state 2: success confirmation */
@@ -284,42 +307,78 @@
       width: 48px;
       padding: 0;
       border-radius: 50%;
-      justify-content: center;
       background: #10b981;
       border-color: #10b981;
       color: #ffffff;
-      box-shadow: 0 0 15px #10b981;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
     }
 
-    .dl-btn.success-state .btn-arrow,
-    .dl-btn.success-state #btn-text-content,
-    .dl-btn.success-state .spinner {
-      display: none;
+    .dl-btn.success-state .btn-text-wrap {
+      opacity: 0;
+      transform: translateX(-8px);
+      pointer-events: none;
+    }
+    .dl-btn.success-state .btn-arrow {
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
     }
 
-    .btn-arrow {
-      font-size: 1.1rem;
-      line-height: 1;
-      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    /* SPINNERS */
+    .spinner {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 1.5px solid var(--dim);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
     }
-    .dl-btn:hover .btn-arrow {
-      transform: translateY(2px);
+
+    .center-spinner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .dl-btn.loading-state .center-spinner {
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .success-checkmark {
-      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.5);
       font-size: 1.25rem;
       font-weight: bold;
+      color: #ffffff;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .dl-btn.success-state .success-checkmark {
-      display: inline-block;
-      animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+      pointer-events: auto;
     }
 
     @keyframes popIn {
-      from { transform: scale(0.5); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+      from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+      to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
     }
 
     /* NOTE */
@@ -363,19 +422,6 @@
       margin-top: 1rem;
       opacity: 0;
       animation: fadeUp 0.5s ease forwards 0.5s;
-    }
-
-    /* SPINNER */
-    .spinner {
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      border: 1.5px solid var(--dim);
-      border-top-color: #ffffff;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-      margin-right: 8px;
-      vertical-align: middle;
     }
 
     /* ANIMATIONS */
@@ -440,11 +486,12 @@
     <!-- Button -->
     <div class="btn-wrap">
       <a class="dl-btn disabled" id="dl-btn" href="#" onclick="onDl(event)">
-        <span id="btn-text">
+        <span class="btn-text-wrap" id="btn-text-wrap">
           <span class="spinner" id="btn-spinner"></span>
           <span id="btn-text-content">Loading</span>
         </span>
         <span class="btn-arrow" id="btn-arrow">↓</span>
+        <span class="spinner center-spinner" id="btn-spinner-center"></span>
         <span class="success-checkmark" id="btn-checkmark">✓</span>
       </a>
     </div>
@@ -455,7 +502,7 @@
     </div>
 
     <!-- Footer -->
-    <p class="foot">© 2026 INFERNUM • EDITORIAL SOLITUDE</p>
+    <p class="foot">© 2026 INFERNUM • INFERNO GURALA</p>
   </div>
 
   <script>
