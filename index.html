@@ -548,6 +548,261 @@
       margin-top: 0.4rem;
     }
 
+    /* ── LAYOUT CONTAINER ── */
+    .layout-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 380px; /* same as wrap initially for mobile */
+      margin: auto 0;
+      gap: 2rem;
+    }
+
+    /* Desktop layout with side panels */
+    @media (min-width: 1024px) {
+      .layout-container {
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: center;
+        max-width: 1100px;
+        gap: 3.5rem;
+      }
+    }
+
+    /* ── SIDE PANELS ── */
+    .side-panel {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.6rem;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: relative;
+      overflow: hidden;
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      
+      /* Animation initial state */
+      opacity: 0;
+      transform: translateY(15px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s;
+      transform-style: preserve-3d;
+    }
+
+    .side-panel:hover {
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .side-panel-glare {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.04) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 2;
+      mix-blend-mode: overlay;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .side-panel:hover .side-panel-glare {
+      opacity: 1;
+    }
+
+    .side-panel-content {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+    }
+
+    @media (min-width: 1024px) {
+      .side-panel {
+        display: flex;
+        width: 280px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 5rem;
+      }
+    }
+
+    .side-header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .side-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .side-title {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #ffffff;
+    }
+
+    .name-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      object-fit: cover;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+    }
+
+    .side-desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .side-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .side-section-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 0.3rem;
+    }
+
+    /* Tags Cloud */
+    .tags-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      padding: 3px 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      color: var(--text-muted);
+    }
+
+    /* Interests List */
+    .interests-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .interests-list li {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      position: relative;
+      padding-left: 14px;
+    }
+
+    .interests-list li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--text-dim);
+      font-weight: bold;
+    }
+
+    /* Goals Checklist */
+    .goals-checklist {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .goal-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .goal-item .checkbox {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+      font-size: 0.6rem;
+      font-weight: bold;
+      color: #34d399; /* green */
+      background: rgba(255, 255, 255, 0.02);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .goal-item.completed .goal-text {
+      color: var(--text-dim);
+      text-decoration: line-through;
+      text-decoration-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .goal-item.active .checkbox {
+      color: #60a5fa; /* blue info */
+      border-color: rgba(96, 165, 250, 0.3);
+    }
+
+    .goal-item.active .goal-text {
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .goal-item.pending .goal-text {
+      color: var(--text-muted);
+    }
+
+    .goal-item.pending .checkbox {
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .goal-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.76rem;
+      line-height: 1.4;
+    }
+
+    .side-quote {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.74rem;
+      font-style: italic;
+      color: var(--text-muted);
+      line-height: 1.5;
+      position: relative;
+      padding-left: 10px;
+      border-left: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
     /* ── ANIMATIONS ── */
     @keyframes dotPulse {
       0%, 100% { opacity: 0.7; box-shadow: 0 0 4px #10b981; }
@@ -587,7 +842,50 @@
   </div>
 
   <!-- Centered Hyper-Premium Dashboard -->
-  <div class="wrap">
+  <div class="layout-container">
+    
+    <!-- Left Side Panel: Profile & Interests -->
+    <aside class="side-panel left-panel">
+      <div class="side-panel-glare"></div>
+      <div class="side-panel-content">
+        <div class="side-header">
+          <span class="side-label">[Identity]</span>
+          <h2 class="side-title">
+            <span>Inferno Gurala</span>
+            <img class="name-avatar" src="profile.jpg" alt="Inferno Gurala">
+          </h2>
+        </div>
+          <p class="side-desc">Welcome to my space. Sit back. Straighten your back. Breathe. Now, get to know me.</p>
+
+        <div class="side-section">
+          <span class="side-section-title">MY PROCESSOR</span>
+          <div class="tags-cloud">
+            <span class="tag-badge">No attachments</span>
+            <span class="tag-badge">Neurodivergent</span>
+            <span class="tag-badge">Minimalist</span>
+            <span class="tag-badge">Philosophy</span>
+            <span class="tag-badge">Aura farming</span>
+            <span class="tag-badge">No judgement</span>
+            <span class="tag-badge">Compassion</span>
+            <span class="tag-badge">Slow</span>
+<span class="tag-badge">Let go</span>
+
+          </div>
+        </div>
+
+        <div class="side-section">
+          <span class="side-section-title">Interests & Mediums</span>
+          <ul class="interests-list">
+            <li>3D & 2D Arts and Motion Design</li>
+            <li>General pop musics & cinematic soundtracks</li>
+            <li>Some Books i like :)</li>
+            <li>Peak meaningful Films & Series</li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+    <div class="wrap">
     
     <!-- Head -->
     <header class="head">
@@ -669,7 +967,7 @@
             <h2 class="card-title">Delve Beta</h2>
             <span class="card-arrow">→</span>
           </div>
-          <p class="card-desc">Lexical glossary builder. Compiles study lists, extracts word contexts from active texts, and maps reading milestones.</p>
+          <p class="card-desc">learning spaced repetition based schemanic word learning thorugh practical interactive UI, and a delibrately designed system</p>
         </div>
       </a>
 
@@ -709,7 +1007,7 @@
           </div>
           
           <div class="links-col">
-            <span class="col-title">Soundtracks</span>
+            <span class="col-title">❤️ Soundtracks</span>
             <a class="connect-link" href="https://music.apple.com/in/playlist/infernum/pl.u-2aoq8ZzHG0vb8gA" target="_blank" rel="noopener">
               <span>Infernum Pl.</span>
             </a>
@@ -720,9 +1018,62 @@
         </div>
       </div>
       <p class="footer-copy">© 2026 INFERNUM • INFERNO GURALA</p>
-    </footer>
+    </div> <!-- /wrap -->
 
-  </div>
+    <!-- Right Side Panel: Goals & Telemetry -->
+    <aside class="side-panel right-panel">
+      <div class="side-panel-glare"></div>
+      <div class="side-panel-content">
+        <div class="side-header">
+          <span class="side-label">[Telemetry]</span>
+          <h2 class="side-title">Core Goals</h2>
+        </div>
+        
+        <div class="side-section">
+          <span class="side-section-title">Milestones // 2026</span>
+          <ul class="goals-checklist">
+            <li class="goal-item completed">
+              <span class="checkbox">✓</span>
+              <span class="goal-text">Start Using Linux completely</span>
+            </li>
+            <li class="goal-item completed">
+              <span class="checkbox">✓</span>
+              <span class="goal-text">Create Utopia App</span>
+            </li>
+            <li class="goal-item active">
+              <span class="checkbox">⋯</span>
+              <span class="goal-text">Create Interceptor App</span>
+            <li class="goal-item active">
+              <span class="checkbox">⋯</span>
+              <span class="goal-text">Create Delve App</span>
+            </li>
+            <li class="goal-item active">
+              <span class="checkbox">⋯</span>
+              <span class="goal-text">Publish Utopia to playstore</span>
+            </li>
+            <li class="goal-item pending">
+              <span class="checkbox"></span>
+              <span class="goal-text">Inferno Visual scope</span>
+            </li>
+            <li class="goal-item pending">
+              <span class="checkbox"></span>
+              <span class="goal-text">Inferno's film scripts</span>
+            </li>
+            <li class="goal-item active">
+              <span class="checkbox">⋯</span>
+              <span class="goal-text">Personal Super brain system environment</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="side-section">
+          <span class="side-section-title">Core Philosophy</span>
+          <p class="side-quote">"The only evil comes from a lack of understanding of this truth. evil(ignorance) is like a shadow—has no real substance of its own; it is simply a lack of light"</p>
+        </div>
+      </div>
+    </aside>
+
+  </div> <!-- /layout-container -->
 
   <script>
     // ── LIVE SYSTEM CLOCK ──────────────────────────────────────────
@@ -803,6 +1154,7 @@
       const statusBadge = document.getElementById('header-status');
       const cards = document.querySelectorAll('.card-item');
       const footer = document.querySelector('.footer-section');
+      const sidePanels = document.querySelectorAll('.side-panel');
       
       // We perform the FLIP position swap after the intro animation finishes (2.0s)
       setTimeout(() => {
@@ -858,6 +1210,14 @@
           
           footer.style.opacity = '1';
           footer.style.transform = 'translateY(0)';
+
+          // Reveal side panels staggered
+          sidePanels.forEach((panel, index) => {
+            setTimeout(() => {
+              panel.style.opacity = '1';
+              panel.style.transform = 'translateY(0)';
+            }, index * 150 + 200);
+          });
           
           // Clean intro DOM and reset z-index
           setTimeout(() => {
@@ -869,24 +1229,26 @@
     });
 
     // ── INTERACTIVE 3D TILT & GLOW ──────────────────────────────────
-    const cards = document.querySelectorAll('.card-item');
-    cards.forEach(card => {
-      card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
+    const interactiveElements = document.querySelectorAll('.card-item, .side-panel');
+    interactiveElements.forEach(item => {
+      item.addEventListener('mousemove', (e) => {
+        const rect = item.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        card.style.setProperty('--mouse-x', `${x}px`);
-        card.style.setProperty('--mouse-y', `${y}px`);
+        item.style.setProperty('--mouse-x', `${x}px`);
+        item.style.setProperty('--mouse-y', `${y}px`);
         
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
-        const tiltX = -(y - centerY) / centerY * 6; // max 6 deg
-        const tiltY = (x - centerX) / centerX * 6;
-        card.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateY(-4px)`;
+        const maxTilt = item.classList.contains('side-panel') ? 3 : 6;
+        const tiltX = -(y - centerY) / centerY * maxTilt;
+        const tiltY = (x - centerX) / centerX * maxTilt;
+        const translateY = item.classList.contains('side-panel') ? 0 : -4;
+        item.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateY(${translateY}px)`;
       });
       
-      card.addEventListener('mouseleave', () => {
-        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+      item.addEventListener('mouseleave', () => {
+        item.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
       });
     });
   </script>
