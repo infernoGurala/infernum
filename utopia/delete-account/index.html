@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Account - UTOPIA</title>
+    <meta name="description" content="Request deletion of your UTOPIA account and all associated data.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #030303;
+            --surface: rgba(255, 255, 255, 0.03);
+            --surface-card: rgba(255, 255, 255, 0.015);
+            --border: rgba(255, 255, 255, 0.06);
+            --text: #ffffff;
+            --sub: rgba(255, 255, 255, 0.6);
+            --dim: rgba(255, 255, 255, 0.35);
+            --line: rgba(255, 255, 255, 0.08);
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --error: #ef4444;
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #06b6d4;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        .grain-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            opacity: 0.02;
+            pointer-events: none;
+            z-index: 9999;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .ambient-glow {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.2;
+            mix-blend-mode: screen;
+        }
+
+        .orb-1 {
+            top: -15%;
+            left: 15%;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, var(--accent-purple) 0%, transparent 70%);
+            animation: floatOrb1 25s infinite ease-in-out alternate;
+        }
+
+        .orb-2 {
+            bottom: -15%;
+            right: 10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--error) 0%, transparent 70%);
+            animation: floatOrb2 28s infinite ease-in-out alternate;
+        }
+
+        @keyframes floatOrb1 {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(60px, 40px) scale(1.05); }
+            100% { transform: translate(-30px, 90px) scale(0.95); }
+        }
+
+        @keyframes floatOrb2 {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-60px, -70px) scale(0.95); }
+            100% { transform: translate(55px, 30px) scale(1.05); }
+        }
+
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 520px;
+            width: 100%;
+            padding: 24px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(16px);
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 40px;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 15px;
+            color: #030303;
+            letter-spacing: -0.5px;
+        }
+
+        .brand span {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 22px;
+            letter-spacing: -0.5px;
+        }
+
+        .card {
+            background-color: var(--surface-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 44px 36px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--error), var(--accent-purple));
+            opacity: 0.7;
+        }
+
+        .icon-circle {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .icon-circle svg {
+            width: 28px;
+            height: 28px;
+            color: var(--error);
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+            background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.85) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .description {
+            color: var(--sub);
+            font-size: 14.5px;
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+
+        .delete-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px 28px;
+            background: linear-gradient(135deg, var(--error), #dc2626);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 14px;
+            color: #ffffff;
+            font-family: var(--font);
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 24px rgba(239, 68, 68, 0.15);
+        }
+
+        .delete-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(239, 68, 68, 0.25);
+            background: linear-gradient(135deg, #f87171, var(--error));
+        }
+
+        .delete-btn:active {
+            transform: translateY(0);
+        }
+
+        .delete-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .redirect-note {
+            margin-top: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--dim);
+            letter-spacing: 0.02em;
+            animation: pulse 2.5s ease-in-out infinite;
+        }
+
+        .footer-note {
+            margin-top: 36px;
+            font-size: 12.5px;
+            color: var(--dim);
+            line-height: 1.6;
+        }
+
+        .footer-note a {
+            color: var(--sub);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            transition: color 0.2s;
+        }
+
+        .footer-note a:hover {
+            color: #ffffff;
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 32px 24px;
+            }
+
+            h1 {
+                font-size: 1.35rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grain-overlay"></div>
+
+    <div class="ambient-glow">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <div class="container">
+        <a href="/" class="brand">
+            <div class="brand-logo">UT</div>
+            <span>UTOPIA</span>
+        </a>
+
+        <div class="card">
+            <div class="icon-circle">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M22 10.5h-6m-8.25-4.5a3.75 3.75 0 1 1 7.5 0 3.75 3.75 0 0 1-7.5 0ZM3.495 21.693a9.75 9.75 0 0 1 15.51-7.681" />
+                </svg>
+            </div>
+
+            <h1>Delete Your Data</h1>
+
+            <p class="description">
+                Request deletion of your UTOPIA account, or any specific data associated with it — including notes, attendance records, chat messages, location history, uploaded files, or any other personal information. Click the button below to send us a request via email.
+            </p>
+
+            <a
+                id="delete-link"
+                href="mailto:johnmosesg150@gmail.com?subject=UTOPIA%20Data%20Deletion%20Request&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20deletion%20of%20the%20following%20from%20my%20UTOPIA%20account%3A%0A%0A%5B%20%5D%20My%20entire%20account%20and%20all%20associated%20data%0A%5B%20%5D%20Community%20notes%20%2F%20uploaded%20documents%0A%5B%20%5D%20Chat%20messages%0A%5B%20%5D%20Location%20%2F%20map%20history%0A%5B%20%5D%20Attendance%20records%0A%5B%20%5D%20Focus%20session%20%2F%20habit%20data%0A%5B%20%5D%20Uploaded%20files%20(Cloudinary)%0A%5B%20%5D%20Other%3A%20%5BPlease%20specify%5D%0A%0AMy%20account%20email%3A%20%5BEnter%20your%20registered%20email%20here%5D%0A%0AThank%20you."
+                class="delete-btn"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                </svg>
+                Send Deletion Request
+            </a>
+
+            <p class="redirect-note">Opens your default email client</p>
+        </div>
+
+        <p class="footer-note">
+            Your request will be processed within 7 business days.<br>
+            You can request full account deletion or removal of specific data.<br>
+            <a href="/utopia/policy/">View our Privacy Policy</a>
+        </p>
+    </div>
+
+    <script>
+        // Auto-redirect to mailto after a brief delay so the user sees the page
+        setTimeout(() => {
+            document.getElementById('delete-link').click();
+        }, 1500);
+    </script>
+</body>
+</html>
